@@ -66,5 +66,11 @@ img {
 }
 
 .section__header {
-	@include flex(center, between);
+	@include flex(center, space-between);
+}
+
+@for $i from 1 to 6 {
+	.mb-#{$i} {
+		margin-bottom: #{$i}rem;
+	}
 }

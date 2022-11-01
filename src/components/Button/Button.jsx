@@ -16,12 +16,12 @@ function Button({ children, className, onClick }) {
 
 export function OutlineButton({ children, className, onClick }) {
 	return (
-		<button
+		<Button
 			className={`btn btn--outline ${className}`}
 			onClick={onClick ? () => onClick() : null}
 		>
 			{children}
-		</button>
+		</Button>
 	);
 }
 

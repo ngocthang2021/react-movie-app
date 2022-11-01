@@ -43,7 +43,7 @@ const tmdbApi = {
 		const url = category[media] + '/' + id + '/credits';
 		return axiosClient.get(url, { params: {} });
 	},
-	getSimilars: (media, id) => {
+	getSimilar: (media, id) => {
 		const url = category[media] + '/' + id + '/similar';
 		return axiosClient.get(url, { params: {} });
 	},

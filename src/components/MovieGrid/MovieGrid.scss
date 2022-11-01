@@ -1,0 +1,40 @@
+@use '../../scss/' as *;
+
+.movie-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 2rem;
+
+	margin-bottom: 3.2rem;
+
+	&__load {
+		text-align: center;
+	}
+
+	@include tablet {
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	}
+}
+
+.movie-search {
+	position: relative;
+
+	width: 100%;
+	max-width: 500px;
+
+	& input {
+		width: 100%;
+		padding-right: 8rem;
+	}
+
+	& button {
+		position: absolute;
+		top: 50%;
+		right: 2px;
+		transform: translateY(-50%);
+
+		@include mobile {
+			right: 1px;
+		}
+	}
+}

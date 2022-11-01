@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -10,7 +10,7 @@ import tmdbApi, { movieType, category } from '../../api/tmdbApi';
 import apiConfig from '../../api/apiConfig';
 
 import Button, { OutlineButton } from '../Button/Button';
-import Modal from '../Modal/Modal';
+import Modal, { ModalContent } from '../Modal/Modal';
 
 import './HeroSlide.scss';
 
@@ -24,7 +24,7 @@ function HeroSlide() {
 				const response = await tmdbApi.getMoviesList(movieType.popular, { params });
 
 				setMovies(response.results.slice(0, 4));
-				console.log(response);
+				// console.log(response);
 
 				return response;
 			} catch {
@@ -35,7 +35,7 @@ function HeroSlide() {
 		getMovies();
 	}, []);
 
-	console.log(movies);
+	// console.log(movies);
 
 	return (
 		// Hero Slide Wrapper
@@ -66,6 +66,12 @@ function HeroSlide() {
 					</SwiperSlide>
 				))}
 			</Swiper>
+			{movies.map((movie) => (
+				<TrailerModal
+					key={movie.id}
+					movie={movie}
+				/>
+			))}
 		</div>
 	);
 }
@@ -76,7 +82,27 @@ function HeroSlideItem({ movie, className }) {
 
 	// Get backgroundImage url
 	const backgroundImage = apiConfig.originalImage(movie.backdrop_path ? movie.backdrop_path : movie.poster_path);
+	// Get posterImage url
 	const posterImage = apiConfig.w500Image(movie.poster_path);
+
+	const setModalActive = async () => {
+		const videos = await tmdbApi.getVideos(category.movie, movie.id);
+
+		const modal = document.getElementById(`modal_${movie.id}`);
+		const iframe = modal.querySelector('.modal-content > iframe');
+		console.log(modal);
+
+		if (videos.results.length > 0) {
+			const videoSrc = `https://www.youtube.com/embed/${videos.results[0].key}`;
+			console.log(videoSrc);
+
+			iframe.setAttribute('src', videoSrc);
+		} else {
+			modal.querySelector('.modal-content > iframe').innerHTML('No trailer');
+		}
+
+		modal.classList.toggle('active');
+	};
 
 	return (
 		<div
@@ -98,11 +124,32 @@ function HeroSlideItem({ movie, className }) {
 					<p className='overview'>{movie.overview}</p>
 					<div className='buttons'>
 						<Button onClick={() => navigate(`/movie/${movie.id}`)}>Watch Now</Button>
-						<OutlineButton>Watch Trailer</OutlineButton>
+						<OutlineButton onClick={setModalActive}>Watch Trailer</OutlineButton>
 					</div>
 				</div>
 			</div>
 		</div>
+	);
+}
+
+function TrailerModal({ movie }) {
+	const iframeRef = useRef(null);
+
+	const onClose = () => iframeRef.current.setAttribute('src', '');
+
+	return (
+		<Modal
+			active={false}
+			id={`modal_${movie.id}`}
+		>
+			<ModalContent onClose={onClose}>
+				<iframe
+					title='Trailer'
+					width='100%'
+					height='500px'
+				></iframe>
+			</ModalContent>
+		</Modal>
 	);
 }
 
